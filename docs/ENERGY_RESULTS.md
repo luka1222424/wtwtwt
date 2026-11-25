@@ -1,36 +1,5 @@
-# Energy results and methodology
+# Current energy results
 
-> **Audit update (25 Nov 2026):** the authoritative final calculation is in [MATHEMATICAL_CALCULATIONS.md](MATHEMATICAL_CALCULATIONS.md), with historical-cadence overlap correction and a dynamic projection of 194.55 Wh (26.55% saving). [Independent audit](INDEPENDENT_TECHNICAL_AUDIT.md). Earlier examples below are historical/legacy, not the corrected final model.
+See [CURRENT_EVALUATION.md](CURRENT_EVALUATION.md) for the current results, explicit scenario, equations, evidence and limitations. Historical extraction and prior projections are preserved in [MATHEMATICAL_CALCULATIONS.md](MATHEMATICAL_CALCULATIONS.md) and [INDEPENDENT_TECHNICAL_AUDIT.md](INDEPENDENT_TECHNICAL_AUDIT.md).
 
-> **Historical coefficients and old scenario.** For the independently re-extracted coefficients, final adaptive projections and full derivation, use [MATHEMATICAL_CALCULATIONS.md](MATHEMATICAL_CALCULATIONS.md). Do not treat the values below as the final adaptive evaluation.
-
-The Monsoon Power Monitor measured the combined Main power channel during short experimental runs. Component breakdowns below are inferred from waveform events, not measurements of electrically isolated parts.
-
-## Historical BASELINE (not current firmware)
-
-ESP32 reads air temperature, air humidity and soil moisture approximately every 2 s. Raspberry Pi logs UART messages and runs CSI capture + ONNX classification approximately every 60 s.
-
-Modelled six-day energy: **273.68 Wh** (average **1.9006 W**). Approximate breakdown: base/background **262.86 Wh**, sensing/logging **3.79 Wh**, camera/ONNX **7.03 Wh**.
-
-## OPTIMIZED (measured test)
-
-The historical short bench-test profile used 10 s ESP32 timer Deep Sleep and wakes Pi every 10 sensing cycles. Analysis of two Monsoon recordings yielded:
-
-| Measured/inferred quantity | Value |
-| --- | ---: |
-| Low-activity power (Main channel) | 1.339330 W |
-| Incremental sensing event energy | 0.092838 J |
-| Incremental combined Pi activity block energy | 55.848094 J |
-| Pi activity block duration | ~34.72 s |
-
-The activity-block estimate includes overlapping sensing events; projection avoids counting them twice.
-
-## Six-day calculation (not directly measured)
-
-Assume 20 s ESP32 Deep Sleep + ~0.334625 s awake overhead and one Pi wake every 360 cycles; 25,493 sensing events and 70 Pi activations over 518,400 s.
-
-**BASELINE: 273.68 Wh. OPTIMIZED: 194.60 Wh. Estimated saving: 79.08 Wh / 28.89%.**
-
-Optimized breakdown: background **192.86 Wh (99.1%)**, sensing **0.66 Wh**, Pi/camera/ONNX incremental **1.08 Wh**.
-
-The previous firmware revision implemented the model's 20 s / 360-cycle configuration. The current adaptive scenario is separate; see [ADAPTIVE_SCENARIO.md](ADAPTIVE_SCENARIO.md). Historical recordings used 10 s / 10 cycles; no six-day hardware measurement was performed. The updated code has not been validated by those historical traces. Low-activity Pi HALT state, measurement boundary and exceptional alarms were not independently quantified. This simplified source edition also differs from the exact firmware/software revisions used during historic Monsoon recordings; do not present those traces as direct validation of this edition.
+144-hour projection: 264.866048 Wh BASELINE, 194.547182 Wh ADAPTIVE, saving 70.318867 Wh (26.548841%). Fair fixed-90 comparator with identical alarm events: 197.318529 Wh. Historical aggregate Monsoon coefficients and new observed cadence are used; no fresh power measurement is claimed.

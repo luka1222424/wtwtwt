@@ -1,3 +1,5 @@
+> **Historical analysis, superseded for current timing and projections.** This document preserves the historical Monsoon extraction and earlier assumptions. The authoritative current hardware evidence and updated model are in [CURRENT_EVALUATION.md](CURRENT_EVALUATION.md). The historical power coefficients are conditional inputs, not new measured power.
+
 # Independent technical and mathematical audit — Smart Plant Monitoring
 
 **Audit date:** 25 November 2026  

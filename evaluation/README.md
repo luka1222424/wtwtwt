@@ -1,6 +1,18 @@
+# Energy evaluation
+
+**Current:** [functional validation and updated mathematical model](../docs/CURRENT_EVALUATION.md). Run from the repository root:
+
+```sh
+python -m pip install -r evaluation/requirements.txt
+python evaluation/analyze_current.py
+```
+
+Derived data in current/ were extracted from pinned source logs linked above. The script checks the published projection tables and generates current CSVs and seven figures (PNG/SVG) in current/generated/. Existing data/ and analyze_energy.py preserve historical Monsoon extraction and earlier audited projections (20.34 s assumption), not current results. Do not confuse measured functional evidence with projected energy.
+
+## Historical reproduction (preserved)
 # Reproducible energy evaluation
 
-Read [Mathematical calculations — complete design, implementation and evaluation](../docs/MATHEMATICAL_CALCULATIONS.md) first.
+Read the historical [Mathematical calculations](../docs/MATHEMATICAL_CALCULATIONS.md).
 
 ## Reproduce
 

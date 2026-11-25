@@ -1,3 +1,5 @@
+> **Historical analysis, superseded for current timing and projections.** This document preserves the historical Monsoon extraction and earlier assumptions. The authoritative current hardware evidence and updated model are in [CURRENT_EVALUATION.md](CURRENT_EVALUATION.md). The historical power coefficients are conditional inputs, not new measured power.
+
 # Mathematical calculations — Smart Plant energy evaluation
 
 **Status:** reproducible analysis of historical measurements + conditional projection of the final implementation. No new electrical or physical end-to-end measurements are claimed. Runtime reference: [775fa23f](https://github.com/luka1222424/wtwtwt/tree/775fa23fa16627b27625882b89710bae86d8b2cf). Analysis rerun 25 November 2026 from the original archives. Independent audit confirmed the main results and recommended historical-cadence overlap correction; the corrected model and outputs below supersede the original projection. See [independent audit](INDEPENDENT_TECHNICAL_AUDIT.md). This page is the detailed evidence base for the six-page LNCS report, not the report itself.
