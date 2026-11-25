@@ -209,6 +209,9 @@ def main():
         parser.error("invalid interval or duration")
     if args.mode == "baseline" and args.shutdown_after_initial_cycle:
         parser.error("shutdown-after-initial-cycle is only available in optimized mode")
+    # The public optimized CLI always follows the production HALT path.
+    if args.mode == "optimized":
+        args.shutdown_after_initial_cycle = True
     runner = ExperimentRunner(args)
     signal.signal(signal.SIGINT, lambda *_: runner.cancel())
     signal.signal(signal.SIGTERM, lambda *_: runner.cancel())
