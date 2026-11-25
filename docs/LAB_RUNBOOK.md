@@ -1,7 +1,7 @@
 # Smart Plant — lab runbook
 Use the repository root and follow the active ESP32 and Raspberry Pi directories.
 No Monsoon run is required for this functional test. Keep the original wiring,
-model and supply arrangement. No energy values are inferred from a short bench run.
+model and supply arrangement. No energy values are inferred from short functional runs.
 
 ## Before connecting hardware
 - Fetch main and note git rev-parse HEAD on both computers. Use matching code.
@@ -69,86 +69,33 @@ If necessary arrange the environment or use a clearly labelled test-only thresho
 change applied to both modes; restore original thresholds for final firmware.
 
 ## BASELINE functional evidence
-Use calibrated baseline build:
-```powershell
-idf.py -B build-baseline -D "SDKCONFIG=sdkconfig.baseline" -p COM4 build flash monitor
-```
-Capture the USB serial terminal with host timestamps (e.g. serial terminal logging;
-do not open two programs on COM4 simultaneously). ESP-IDF Monitor can be redirected
-or logged by the chosen serial terminal. Save it as baseline-esp.log.
-On Pi, in raspberry_pi/:
+
+Build and flash BASELINE using the shared calibration and profile-specific defaults, then disable the autonomous Pi service and launch the final baseline:
+
 ```bash
-./check_raspberry_pi.sh --baseline
-CAMERA_INTERVAL_SECONDS=60 TEST_DURATION_SECONDS=180 ./run_baseline.sh
-tail -f runtime_baseline.log
+sudo systemctl disable --now smartplant-optimized.service # if installed
+cd raspberry_pi
+./run_baseline.sh
 ```
-This is a labelled accelerated camera test, not the 30 min production cadence.
-Wait for RUN_MARKER, at least two distinct successful camera/ONNX records and
-valid UART samples spaced ~20 s. Stop using ./stop_test.sh if still running.
-Archive using the commands below before switching. For final baseline use
-./run_baseline.sh without CAMERA_INTERVAL_SECONDS override.
+
+Use nominal 20 s sensing and 1800 s camera cadence. Record ESP USB console and Pi CSV/events; verify capture and classification at startup and the next scheduled image. Stop with `./stop_test.sh` before changing profiles.
 
 ## OPTIMIZED functional evidence
-Create a separate test config; do not alter production defaults:
-```powershell
-idf.py -B build-bench-optimized -D "SDKCONFIG=sdkconfig.bench-optimized" -D "SDKCONFIG_DEFAULTS=sdkconfig.defaults;sdkconfig.optimized.defaults" reconfigure
-idf.py -B build-bench-optimized -D "SDKCONFIG=sdkconfig.bench-optimized" menuconfig
-```
-Apply same soil calibration. Keep sleep 20 s; set normal cycles 6, stable cycles
-18. These are ~2 min and ~6 min, not the final 30/120 min. Increase bench intervals
-if the Pi cannot reliably complete boot, capture and halt within them.
-```powershell
-idf.py -B build-bench-optimized -D "SDKCONFIG=sdkconfig.bench-optimized" -p COM4 build flash monitor
-```
-Save ESP USB evidence continuously with host timestamps as optimized-esp.log.
-On Pi while still running:
+
+Build and flash OPTIMIZED using the shared calibration and production 20 s sleep / 90 / 360 cycles. Install the autonomous service:
+
 ```bash
-./check_raspberry_pi.sh --optimized
+cd raspberry_pi
 ./install_optimized_power_service.sh
-# Ensure no maintenance marker remains before autonomous testing:
-sudo rm -f /boot/firmware/smartplant-maintenance
 sudo reboot
 ```
-Reboot starts service, captures, processes and halts; this initial manual boot is
-not an ESP-triggered wake. Keep Pi power attached. Observe real halt, then:
-1. Keep readings valid and alarm-free through first normal request and later
-   stable request. Check CAMERA_POLICY and PI_WAKE_REQUEST on ESP USB log.
-2. After Pi actually halts, create a genuine new threshold alarm (e.g. safely
-   adjust soil moisture or air humidity within sensor limits). Verify the next
-   sample triggers alarm_new and a real Pi boot/capture/ONNX/halt.
-3. Keep condition active; check no wake every sample, and normal scheduled
-   request after configured cycles. Restore healthy readings; verify stable
-   interval returns. Avoid flooding the electronics or condensation.
-4. Correlate Pi run IDs and camera_processing success, not just GPIO pulse status.
-   A pulse during Pi boot/operation is not an acknowledgement or an extra image.
-5. After the last verified orderly HALT, retrieve evidence without racing the
-   service: disconnect both boards' power, then remove the Pi SD card.
-   On another computer open its FAT boot partition and create an empty file
-   named smartplant-maintenance (no .txt extension). Reinsert the card,
-   leave ESP unpowered/disconnected from Pi signal wires, and power Pi.
-   The installed service skips automatic capture/halt while that file exists.
-   On Pi verify systemctl is-active smartplant-optimized.service is not active,
-   then run the archive commands below. This is a maintenance boot, not a
-   measurement. Never remove the card while Pi is running or writing.
-   To restore autonomy, remove the marker using
-   sudo rm -f /boot/firmware/smartplant-maintenance, verify the service is enabled,
-   reconnect safely with both boards off, and reboot.
 
-## Restore production configuration
-Use separate final config:
-```powershell
-idf.py -B build-optimized -D "SDKCONFIG=sdkconfig.optimized" -D "SDKCONFIG_DEFAULTS=sdkconfig.defaults;sdkconfig.optimized.defaults" reconfigure
-idf.py -B build-optimized -D "SDKCONFIG=sdkconfig.optimized" menuconfig
-idf.py -B build-optimized -D "SDKCONFIG=sdkconfig.optimized" -p COM4 build flash monitor
-```
-In menuconfig enter same calibration; verify normal 90, stable 360 and sleep 20.
-Verify baseline final 1800 s camera default. No accelerated build is evidence
-of full-length interval timing.
+Record host-timestamped ESP USB logs and Pi events. Confirm capture/inference followed by poweroff request and subsequent GPIO wake; keep external power supplied. Allow each Pi activity to finish before inducing a new alarm. Validate normal and stable intervals under appropriate sensor conditions. Production HALT is mandatory in the public optimized launchers. To retrieve evidence, use the boot-partition maintenance marker `smartplant-maintenance` (create it while Pi is active or on the accessible FAT boot partition with power disconnected), boot for maintenance, then remove the marker before resuming production. Do not enable the gpio-shutdown overlay.
 
 ## Archive evidence on Pi (after each test, with runner stopped)
 From raspberry_pi/:
 ```bash
-LABEL=baseline-bench # change to optimized-bench or final as applicable
+LABEL=baseline # or optimized
 DEST="lab-evidence/${LABEL}-$(date -u +%Y%m%dT%H%M%SZ)"
 mkdir -p "$DEST"
 for f in events_log.txt test_events.csv runtime_baseline.log runtime_optimized.log images; do

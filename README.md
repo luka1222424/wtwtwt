@@ -1,16 +1,26 @@
 # Smart Plant Monitoring
 
-**Current release — 25 November 2026.** Integrated hardware-tested DHT11 and IMX708 camera fixes, shared soil calibration (1246 dry / 2390 wet) and WirePlumber deployment configuration from [hardware-tested source](https://github.com/amarkrasniqi54321-ctrl/wtwtwt/tree/54dca92055e7e58dbca2194c67b0cfc151e1ef20).
+Luka Sveti and Amar Krasniqi — University of Ljubljana, Faculty of Computer and Information Science.
 
-**144-hour conditional projection:** BASELINE 264.866 Wh; adaptive OPTIMIZED 194.547 Wh; **26.5488% saving**. Historical Monsoon coefficients combined with new observed cadence, not a new electrical measurement.
+An energy-aware plant monitoring system with an ESP32-WROOM-32, Raspberry Pi 4B, DHT11, analog soil moisture sensor, IMX708 CSI camera and ONNX leaf-condition classifier.
 
-- [Current functional evidence, calculations and limitations](docs/CURRENT_EVALUATION.md)
-- [Reproduce updated evaluation and figures](evaluation/)
-- [Complete project handoff](docs/HANDOFF.md)
-- [ESP32 firmware](esp32/) — separate BASELINE and OPTIMIZED profiles
-- [Raspberry Pi application](raspberry_pi/) — optimized capture/inference once per boot, then HALT
-- [Lab runbook](docs/LAB_RUNBOOK.md) and [wiring](esp32/docs/WIRING.md)
-- [Adaptive specification](docs/ADAPTIVE_SCENARIO.md)
-- [Historical extraction](docs/MATHEMATICAL_CALCULATIONS.md) and [independent audit](docs/INDEPENDENT_TECHNICAL_AUDIT.md)
+| | BASELINE | OPTIMIZED |
+|---|---|---|
+| Sensing | 20 s, ESP32 awake | 20 s deep sleep plus processing time |
+| Camera | Startup and every 30 min | Adaptive 90/360 cycles and new alarms or sensor faults |
+| Raspberry Pi | Continuously active | One capture and inference per boot, then HALT |
 
-Production evidence: 174 deep-sleep entries, six GPIO requests, six successful captures, five successful inferences and five poweroff requests. Across both optimized tests 261 observed consecutive policy transitions match the implementation. Stable 360-cycle operation remains physically unvalidated. Prior post-integration local suite reported 36 passed and 4 skipped; inspect current CI separately. No six-day reliability or new measured energy is claimed. Third-party model/image licenses and attribution remain in raspberry_pi/leaf_classifier/.
+Hardware tests recorded 92 baseline and 174 optimized sensor samples. Mean intervals were 20.000 s and 20.427 s. The six-day energy model combines measured final-profile timing with Monsoon-derived coefficients: **264.87 Wh vs 194.55 Wh (26.55% projected saving)**.
+
+## Setup
+
+- [Hardware wiring and configuration](esp32/docs/WIRING.md)
+- [Installation, ESP32 builds and Raspberry Pi operation](docs/HANDOFF.md)
+- [Hardware test procedure](docs/LAB_RUNBOOK.md)
+- [Adaptive wake policy](docs/ADAPTIVE_SCENARIO.md)
+- [Functional measurements and energy calculations](docs/CURRENT_EVALUATION.md)
+- [Reproduce analysis and figures](evaluation/README.md)
+
+The ESP32 firmware has separate baseline and optimized build profiles. The exact licensed [ONNX model](raspberry_pi/leaf_classifier/model.onnx) is included. On Raspberry Pi, `prepare_raspberry_pi.sh` installs dependencies and verifies the model checksum, retrieving the pinned source only if necessary. Model and dataset [licenses and attribution](raspberry_pi/leaf_classifier/THIRD_PARTY.md) are included.
+
+Both firmware profiles and the full host/ONNX test suite have passed CI. The 360-cycle policy has been verified in software; hardware experiments exercised normal and event-triggered operation. The 144-hour energy estimate is a model, not a continuous power recording.

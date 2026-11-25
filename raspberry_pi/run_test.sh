@@ -3,6 +3,8 @@ set -euo pipefail
 MODE="${1:-}"
 [[ "$MODE" == baseline || "$MODE" == optimized ]] || { echo 'Usage: run_test.sh {baseline|optimized}' >&2; exit 2; }
 shift
+# All optimized launches use the production HALT path.
+if [[ "$MODE" == optimized ]]; then set -- --shutdown-after-initial-cycle "$@"; fi
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 PID_FILE="$ROOT/smart_plant_test.pid"
 # Serialize launcher PID-file checks; the Python runner independently locks execution.

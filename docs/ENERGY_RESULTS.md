@@ -1,5 +1,5 @@
-# Current energy results
+# Energy results
 
-See [CURRENT_EVALUATION.md](CURRENT_EVALUATION.md) for the current results, explicit scenario, equations, evidence and limitations. Historical extraction and prior projections are preserved in [MATHEMATICAL_CALCULATIONS.md](MATHEMATICAL_CALCULATIONS.md) and [INDEPENDENT_TECHNICAL_AUDIT.md](INDEPENDENT_TECHNICAL_AUDIT.md).
+See [functional evaluation and scenario](CURRENT_EVALUATION.md) and [power characterization](MATHEMATICAL_CALCULATIONS.md) for equations, evidence and limitations.
 
-144-hour projection: 264.866048 Wh BASELINE, 194.547182 Wh ADAPTIVE, saving 70.318867 Wh (26.548841%). Fair fixed-90 comparator with identical alarm events: 197.318529 Wh. Historical aggregate Monsoon coefficients and new observed cadence are used; no fresh power measurement is claimed.
+144-hour projection: 264.866048 Wh BASELINE, 194.547182 Wh OPTIMIZED, saving 70.318867 Wh (26.548841%). The calculation combines Monsoon-derived power coefficients with measured final-profile cadence; it is not a continuous power measurement.

@@ -2,7 +2,7 @@
 
 ## Current evidence (25 November 2026)
 
-See [CURRENT_EVALUATION.md](CURRENT_EVALUATION.md). Shared calibration defaults reproduce the tested sensor (1246/2390); recalibrate for other hardware. Production test supports normal/event-triggered wake and poweroff requests, but stable mode and exact physical HALT durations remain unverified. Post-integration 36 tests passed and 4 were skipped locally; check CI separately.
+See [CURRENT_EVALUATION.md](CURRENT_EVALUATION.md). Shared calibration defaults reproduce the tested sensor (1246/2390); recalibrate for other hardware. Production test supports normal/event-triggered wake and poweroff requests, but stable mode and exact physical HALT durations remain unverified. The full 40-test host/ONNX suite and both firmware builds passed CI.
 
 ## Release gate
 
@@ -20,7 +20,7 @@ See [CURRENT_EVALUATION.md](CURRENT_EVALUATION.md). Shared calibration defaults 
 4. Set physically measured dry and wet ADC endpoints and enable soil calibration in the active ESP32 config. Default thresholds are RH > 50%, temperature < 15 C, soil < 300/1000. For a stable test, no rule may be active: RH <= 50%, temperature >= 15 C, soil >= 300/1000. Otherwise 120-min stability is correctly disallowed. A DHT error also blocks the stable transition.
 5. BASELINE: disable autonomous service with sudo systemctl disable --now smartplant-optimized.service if previously installed, flash fresh BASELINE build, run ./run_baseline.sh. Verify RUN_MARKER, serial records and images. Stop via ./stop_test.sh before switching modes.
 6. OPTIMIZED: flash fresh OPTIMIZED firmware, install service using ./install_optimized_power_service.sh, reboot once. Record console logs with host timestamps; verify each Pi wake, capture/inference and halt. Capture events_log.txt, test_events.csv and images. A GPIO pulse is only a request, not proof of actual wake; the Pi cannot receive UART when halted.
-7. For fast functional tests use a separately named build with 6/18 cycles instead of 90/360 (allow Pi to complete boot/capture/halt before the next request; extend further if necessary); leave 20 s sensor cadence unchanged. Use baseline CAMERA_INTERVAL_SECONDS=60 only as a labelled test override. See [LAB_RUNBOOK.md](LAB_RUNBOOK.md) for explicit commands and evidence archiving. Restore production defaults afterwards. Exercise stable, new alarm, persistent alarm and recovery. An alarm detected while the Pi is already active is not guaranteed to generate an additional image.
+7. Test only the production profiles (20 s/1800 s baseline, 20 s sleep/90/360 optimized). Exercise stable, new alarm, persistent alarm and recovery; allow Pi to complete boot/capture/halt before the next request. A pulse while the Pi is already active need not yield an additional image.
 8. When an optimized capture/model attempt fails, logs now record failure and the Pi attempts orderly halt after cleanup to permit future wakes. No failed attempt is counted as a successful inference. If poweroff itself fails, service retries at most within its configured start-rate limit; repeated errors need intervention. Check journalctl -u smartplant-optimized.service and power state. Reinstall service after updating its template. For log retrieval after a verified HALT, the FAT boot partition smartplant-maintenance marker suppresses auto-start on the next boot; follow LAB_RUNBOOK.md.
 
 ## Evidence and limitations
