@@ -33,15 +33,11 @@ raspberry_pi/images/
 # Downloaded third-party model (see ASSETS.json)
 raspberry_pi/leaf_classifier/model.onnx
 
-# Archived tree runtime artifacts
-smart-plant/raspberry_pi/images/
-smart-plant/raspberry_pi/leaf_classifier/model.onnx
-
 # Runtime runner lock
 raspberry_pi/.smartplant.lock
 raspberry_pi/.smartplant-launch.lock
 
-# Lab evidence and local accelerated builds
+# Local lab evidence and temporary builds
 raspberry_pi/lab-evidence/
 esp32/sdkconfig.bench*
 esp32/build-bench*/
