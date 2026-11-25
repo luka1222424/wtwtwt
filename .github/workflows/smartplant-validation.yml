@@ -31,22 +31,10 @@ jobs:
         run: |
           python -m compileall -q smartplant_pi leaf_classifier tests project_energy.py
           python -m unittest discover -s tests -v
-      - name: Install exact ONNX dependencies and download model
+      - name: Install exact ONNX dependencies and verify bundled model
         working-directory: raspberry_pi
         run: |
           python -m pip install -r leaf_classifier/requirements.txt
-          python - <<'PY'
-          from pathlib import Path
-          import hashlib, json, urllib.request
-          root=Path("leaf_classifier")
-          a=next(a for a in json.loads((root/"ASSETS.json").read_text()) if a["path"]=="model.onnx")
-          p=root/"model.onnx"
-          with urllib.request.urlopen(a["url"], timeout=90) as response:
-              data=response.read()
-          if hashlib.sha256(data).hexdigest()!=a["sha256"]:
-              raise SystemExit("ONNX model SHA256 mismatch")
-          p.write_bytes(data)
-          PY
           python leaf_classifier/verify_install.py
       - name: Full suite including real ONNX worker
         working-directory: raspberry_pi

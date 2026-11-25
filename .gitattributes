@@ -1,0 +1,7 @@
+*.sh text eol=lf
+*.py text eol=lf
+*.c text eol=lf
+*.h text eol=lf
+*.onnx binary
+*.jpg binary
+raspberry_pi/leaf_classifier/labels.json -text

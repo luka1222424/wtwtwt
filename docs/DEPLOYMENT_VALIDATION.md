@@ -2,7 +2,7 @@
 
 ## Current evidence (25 November 2026)
 
-See [CURRENT_EVALUATION.md](CURRENT_EVALUATION.md). Shared calibration defaults reproduce the tested sensor (1246/2390); recalibrate for other hardware. Production test supports normal/event-triggered wake and poweroff requests, but stable mode and exact physical HALT durations remain unverified. The hardware-tested runtime revision passed all 40 tests and both firmware builds in CI run 45693380177; inspect the current release CI separately.
+See [CURRENT_EVALUATION.md](CURRENT_EVALUATION.md). Shared calibration defaults reproduce the tested sensor (1246/2390); recalibrate for other hardware. Production test supports normal/event-triggered wake and poweroff requests, but stable mode and exact physical HALT durations remain unverified. The full 40-test host/ONNX suite and both firmware builds passed CI.
 
 ## Release gate
 

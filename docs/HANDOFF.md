@@ -1,15 +1,12 @@
-# Smart Plant — complete technical handoff
+# Installation and operation
 
-> **Current release:** See [CURRENT_EVALUATION.md](CURRENT_EVALUATION.md) for the new physical evidence and updated projections. Historical extraction and audit are retained separately.
-
-Start here. This public repository contains the complete active implementation. Both firmware modes share one ESP32 source tree and use distinct build configurations. Read only unless explicitly instructed to change something. Do not redesign the project or invent evidence.
+Both operating profiles share one ESP32 source tree with separate build configurations.
 
 ## 1. Get all required files
 
 ```bash
 git clone https://github.com/luka1222424/wtwtwt.git
 cd wtwtwt
-git rev-parse HEAD
 ```
 
 Alternatively download the repository ZIP. Preserve the directory structure. Copy the complete esp32/ directory to the ESP-IDF workstation and complete raspberry_pi/ directory to Raspberry Pi; a complete checkout on both is preferred.
@@ -38,7 +35,7 @@ Alternatively download the repository ZIP. Preserve the directory structure. Cop
 | [project_energy.py](../raspberry_pi/project_energy.py) | Energy projection, not measurement |
 | [CI workflow](../.github/workflows/smartplant-validation.yml) | Both firmware builds and host/model validation |
 
-External model.onnx is not tracked. The prepare script downloads the pinned external model and verifies its SHA-256 from [ASSETS.json](../raspberry_pi/leaf_classifier/ASSETS.json). Preserve model and dataset attribution, licenses, image fixtures and ordered labels. No paid API required.
+The licensed model.onnx is included. The prepare script verifies its SHA-256, with pinned-source download as a recovery option, using [ASSETS.json](../raspberry_pi/leaf_classifier/ASSETS.json). Preserve model and dataset attribution, licenses, image fixtures and ordered labels. No paid API required.
 
 ## 2. Required behaviour
 
@@ -54,7 +51,7 @@ Stable policy needs at least one prior wake request and 90 consecutive valid ala
 
 ## 3. Hardware, build and execution
 
-Read [LAB_RUNBOOK.md](LAB_RUNBOOK.md) and [WIRING.md](../esp32/docs/WIRING.md) before touching hardware. ESP32-WROOM-32, Pi 4B, CSI camera, DHT11, analog soil sensor, passive buzzer. Disconnect both supplies before wiring. ESP GPIO4 DHT11, GPIO34 soil AO, GPIO25 buzzer; TX17 to Pi RX15 physical pin 10, RX16 to Pi TX14 pin 8, GPIO26 open-drain to Pi GPIO3 pin 5, common ground pin 6. 3.3 V logic, never 5 V to ESP GPIO. Wake pulse 250 ms LOW. UART 115200 8N1 /dev/serial0, serial hardware enabled and login disabled. EEPROM WAKE_ON_GPIO=1, POWER_OFF_ON_HALT=0, no gpio-shutdown overlay. Keep Pi supply connected after HALT. Physically measure distinct dry/wet calibration endpoints, apply identical values to both profiles; no invented calibration. Stable thresholds: RH <=50%, temperature >=15 C, soil >=300/1000, valid readings.
+Read [LAB_RUNBOOK.md](LAB_RUNBOOK.md) and [WIRING.md](../esp32/docs/WIRING.md) before touching hardware. ESP32-WROOM-32, Pi 4B, CSI camera, DHT11, analog soil sensor, passive buzzer. Disconnect both supplies before wiring. ESP GPIO4 DHT11, GPIO34 soil AO, GPIO25 buzzer; TX17 to Pi RX15 physical pin 10, RX16 to Pi TX14 pin 8, GPIO26 open-drain to Pi GPIO3 pin 5, common ground pin 6. 3.3 V logic, never 5 V to ESP GPIO. Wake pulse 250 ms LOW. UART 115200 8N1 /dev/serial0, serial hardware enabled and login disabled. EEPROM WAKE_ON_GPIO=1, POWER_OFF_ON_HALT=0, no gpio-shutdown overlay. Keep Pi supply connected after HALT. Physically measure distinct dry/wet calibration endpoints, apply identical values to both profiles; use measured calibration. Stable thresholds: RH <=50%, temperature >=15 C, soil >=300/1000, valid readings.
 
 ESP-IDF 6.1 PowerShell, from esp32/ (replace COM4):
 ```powershell
@@ -97,16 +94,13 @@ Do not run direct launcher alongside service. Manual initial boot is not ESP-tri
 
 ## 4. Functional tests and evidence
 
-The hardware-tested runtime revision passed all 40 tests and both firmware builds in [CI run 45693380177](https://github.com/luka1222424/wtwtwt/actions/runs/45693380177). Current release restricts the optimized launcher to the same HALT-enabled path; inspect current CI separately. Production evidence supports normal/event-driven operation; stable 360-cycle operation is untested physically. See CURRENT_EVALUATION.md.
+The full host/ONNX suite (40 tests) and both firmware builds passed [CI](https://github.com/luka1222424/wtwtwt/actions/runs/45706220573). Production evidence supports normal/event-driven operation; stable 360-cycle operation is untested physically. See CURRENT_EVALUATION.md.
 
 Use the production intervals for both profiles. Follow the runbook for maintenance and evidence retrieval.
 
-Record ESP USB console with host timestamps (SMARTPLANT_JSON, CAMERA_POLICY, PI_WAKE_REQUEST), Pi events_log.txt, test_events.csv, images/, runtime_baseline.log, runtime_optimized.log, systemd journal. Archive separately with commit, calibration, intervals and observed actual wake/halt. Pi cannot log while halted. A wake request is not a successful capture. Do not invent missing measurements or logs.
+Record ESP USB console with host timestamps (SMARTPLANT_JSON, CAMERA_POLICY, PI_WAKE_REQUEST), Pi events_log.txt, test_events.csv, images/, runtime_baseline.log, runtime_optimized.log, systemd journal. Archive separately with commit, calibration, intervals and observed actual wake/halt. Pi cannot log while halted. A wake request is not a successful capture. 
 
 ## 5. Energy model and report
 
 Read [CURRENT_EVALUATION.md](CURRENT_EVALUATION.md). Current 144 h projection: BASELINE 264.866 Wh, adaptive 194.547 Wh (26.5488%). Run `python evaluation/analyze_current.py` from repository root after installing evaluation requirements. For arbitrary activity counts use `python raspberry_pi/project_energy.py --pi-blocks 109`. Historical power coefficients and new cadence are separate; no fresh electrical measurement is claimed.
 
-## 6. AI review task
-
-Read only. Use existing validation, avoid repeating expensive tests unless investigating a concrete blocker. Do not refactor, redesign, change hardware or introduce optional optimizations. Return only: specification PASS/FAIL; deployment readiness PASS/FAIL; actual critical blockers with file/line or none; GO/NO-GO for physical testing. Physical validation supports normal/event-triggered cycles; see current evidence and remaining limitations.
