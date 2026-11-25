@@ -1,0 +1,4 @@
+test,measurements,consecutive_intervals,mean_s,median_s,min_s,p95_lower_order_s,max_s,valid_air,valid_soil,deep_sleep_cycles,captures_success,inferences_success,gpio_requests
+Baseline,92,91,20.000439560439556,20,19.993,20.007,20.008,92,92,0,2,2,0
+Optimized bench,89,88,20.406693181818188,20.374,20.349,20.817,21.087,89,89,90,1,1,1
+Optimized production,174,172,20.42715697674419,20.375,20.352,20.827,21.897,174,140,174,6,5,6
