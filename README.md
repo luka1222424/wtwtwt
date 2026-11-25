@@ -1,16 +1,14 @@
 # Smart Plant Monitoring
 
-**Current release — 25 November 2026.** Integrated hardware-tested DHT11 and IMX708 camera fixes, shared soil calibration (1246 dry / 2390 wet) and WirePlumber deployment configuration from [hardware-tested source](https://github.com/amarkrasniqi54321-ctrl/wtwtwt/tree/54dca92055e7e58dbca2194c67b0cfc151e1ef20).
+Two final operating profiles: **BASELINE** (always-on Pi and ESP32, 20 s sensing and 1800 s imaging) and **OPTIMIZED** (ESP32 deep sleep, dynamic 90/360-cycle and event-triggered Pi wake, autonomous HALT after one capture/inference). Both use the hardware-tested sensor/camera drivers and calibration (1246 dry / 2390 wet).
 
-**144-hour conditional projection:** BASELINE 264.866 Wh; adaptive OPTIMIZED 194.547 Wh; **26.5488% saving**. Historical Monsoon coefficients combined with new observed cadence, not a new electrical measurement.
+**144-hour conditional projection:** BASELINE 264.866 Wh; OPTIMIZED 194.547 Wh; **26.5488% saving**. Historical Monsoon power coefficients combined with observed final-profile cadence, not a new electrical measurement.
 
-- [Current functional evidence, calculations and limitations](docs/CURRENT_EVALUATION.md)
-- [Reproduce updated evaluation and figures](evaluation/)
-- [Complete project handoff](docs/HANDOFF.md)
-- [ESP32 firmware](esp32/) — separate BASELINE and OPTIMIZED profiles
-- [Raspberry Pi application](raspberry_pi/) — optimized capture/inference once per boot, then HALT
-- [Lab runbook](docs/LAB_RUNBOOK.md) and [wiring](esp32/docs/WIRING.md)
-- [Adaptive specification](docs/ADAPTIVE_SCENARIO.md)
-- [Historical extraction](docs/MATHEMATICAL_CALCULATIONS.md) and [independent audit](docs/INDEPENDENT_TECHNICAL_AUDIT.md)
+- [Current functional evidence, equations and limitations](docs/CURRENT_EVALUATION.md)
+- [Reproduce current two-profile evaluation and figures](evaluation/)
+- [Project handoff](docs/HANDOFF.md), [lab runbook](docs/LAB_RUNBOOK.md), [wiring](esp32/docs/WIRING.md)
+- [ESP32 firmware](esp32/), [Raspberry Pi application](raspberry_pi/), [adaptive policy](docs/ADAPTIVE_SCENARIO.md)
 
-Production evidence: 174 deep-sleep entries, six GPIO requests, six successful captures, five successful inferences and five poweroff requests. Across both optimized tests 261 observed consecutive policy transitions match the implementation. Stable 360-cycle operation remains physically unvalidated. Prior post-integration local suite reported 36 passed and 4 skipped; inspect current CI separately. No six-day reliability or new measured energy is claimed. Third-party model/image licenses and attribution remain in raspberry_pi/leaf_classifier/.
+Final-profile hardware tests: 92 BASELINE and 174 OPTIMIZED sensor records, 174 deep-sleep entries, six optimized GPIO requests, six captures, five successful inferences and five poweroff requests. All 172 consecutive optimized policy transitions agree with the implementation. The hardware-tested runtime passed 40 CI tests and both ESP-IDF builds. Stable 360-cycle operation was tested in software but not physically reached. No new power measurement or six-day reliability is claimed.
+
+Development evidence and broader model sensitivity controls are preserved at the [previous audited revision](https://github.com/luka1222424/wtwtwt/tree/d45c1f514402bac7c8c341b9ac01e7dc46ed9542); they are not additional submitted operating profiles. Raw measurements remain available via the pinned evidence links in CURRENT_EVALUATION.md.

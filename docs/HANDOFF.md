@@ -93,13 +93,13 @@ OPTIMIZED after stopping baseline and calibrated optimized flash:
 sudo rm -f /boot/firmware/smartplant-maintenance
 sudo reboot
 ```
-Do not run direct launcher alongside service. Manual initial boot is not ESP-triggered. Bench-only no-halt option with service stopped: PI_SHUTDOWN_AFTER_INITIAL_CYCLE=0 TEST_DURATION_SECONDS=600 ./run_optimized.sh.
+Do not run direct launcher alongside service. Manual initial boot is not ESP-triggered. Optimized always requests HALT after its production cycle.
 
 ## 4. Functional tests and evidence
 
-Earlier code passed 40 tests and both firmware builds. Post-integration local tests were reported as 36 passed / 4 skipped; inspect current CI before claiming full validation. The 25 November production evidence supports normal/event-driven operation; stable 360-cycle operation is untested physically. See CURRENT_EVALUATION.md.
+The hardware-tested runtime revision passed all 40 tests and both firmware builds in [CI run 45693380177](https://github.com/luka1222424/wtwtwt/actions/runs/45693380177). Current release restricts the optimized launcher to the same HALT-enabled path; inspect current CI separately. Production evidence supports normal/event-driven operation; stable 360-cycle operation is untested physically. See CURRENT_EVALUATION.md.
 
-For accelerated test only: BASELINE CAMERA_INTERVAL_SECONDS=60 TEST_DURATION_SECONDS=180 ./run_baseline.sh; OPTIMIZED separate bench build 6/18 cycles, still 20 s sleep. Allow time for real Pi boot, processing and halt. Restore final 90/360 and 1800 s. Test normal, stable, new alarm, persistent alarm and recovery. Follow runbook for safe maintenance boot and evidence retrieval.
+Use the production intervals for both profiles. Follow the runbook for maintenance and evidence retrieval.
 
 Record ESP USB console with host timestamps (SMARTPLANT_JSON, CAMERA_POLICY, PI_WAKE_REQUEST), Pi events_log.txt, test_events.csv, images/, runtime_baseline.log, runtime_optimized.log, systemd journal. Archive separately with commit, calibration, intervals and observed actual wake/halt. Pi cannot log while halted. A wake request is not a successful capture. Do not invent missing measurements or logs.
 

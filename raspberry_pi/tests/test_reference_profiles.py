@@ -27,7 +27,11 @@ class ReferenceProfileTests(unittest.TestCase):
     def test_optimized_halt_entrypoints(self):
         launcher = (ROOT / "raspberry_pi/run_optimized.sh").read_text()
         service = (ROOT / "raspberry_pi/systemd/smartplant-optimized.service").read_text()
-        self.assertIn("PI_SHUTDOWN_AFTER_INITIAL_CYCLE:-1", launcher)
+        self.assertNotIn("PI_SHUTDOWN_AFTER_INITIAL_CYCLE", launcher)
+        direct = (ROOT / "raspberry_pi/run_test.sh").read_text()
+        self.assertIn('set -- --shutdown-after-initial-cycle "$@"', direct)
+        runner = (ROOT / "raspberry_pi/smartplant_pi/experiment_runner.py").read_text()
+        self.assertIn('if args.mode == "optimized":\n        args.shutdown_after_initial_cycle = True', runner)
         self.assertIn("--shutdown-after-initial-cycle", launcher)
         self.assertIn("--shutdown-after-initial-cycle", service)
         self.assertIn("ConditionPathExists=!/boot/firmware/smartplant-maintenance", service)
