@@ -12,8 +12,8 @@
 
 #define DHT11_MIN_INTERVAL_US       2000000LL
 #define DHT11_START_LOW_MS          20U
-#define DHT11_RELEASE_US            30U
-#define DHT11_EDGE_TIMEOUT_US       120U
+#define DHT11_RELEASE_US            20U
+#define DHT11_EDGE_TIMEOUT_US       150U
 #define DHT11_ONE_THRESHOLD_US      50U
 #define DHT11_MIN_TEMPERATURE_C     0.0f
 #define DHT11_MAX_TEMPERATURE_C     50.0f
@@ -107,7 +107,9 @@ esp_err_t dht11_read(dht11_reading_t *reading)
     }
     s_last_attempt_us = now_us;
 
-    esp_err_t err = gpio_set_direction(s_data_gpio, GPIO_MODE_OUTPUT_OD);
+    /* Keep open-drain input+output mode active so the input buffer and pull-up
+     * never glitch between releasing the start pulse and sampling the response. */
+    esp_err_t err = gpio_set_direction(s_data_gpio, GPIO_MODE_INPUT_OUTPUT_OD);
     if (err != ESP_OK) {
         return err;
     }
@@ -119,26 +121,18 @@ esp_err_t dht11_read(dht11_reading_t *reading)
 
     /* Host start signal: hold DATA low for at least 18 ms. */
     vTaskDelay(pdMS_TO_TICKS(DHT11_START_LOW_MS) + 1U);
-    err = gpio_set_level(s_data_gpio, 1);
-    if (err != ESP_OK) {
-        release_data_line();
-        return err;
-    }
-    esp_rom_delay_us(DHT11_RELEASE_US);
-    err = gpio_set_direction(s_data_gpio, GPIO_MODE_INPUT);
-    if (err != ESP_OK) {
-        release_data_line();
-        return err;
-    }
 
     uint8_t bytes[5] = {0};
     bool timing_ok;
 
     /*
-     * Suppress task switches and local-core interrupts only during the
-     * approximately 4 ms response. Each edge wait still has its own timeout.
+     * Enter critical section BEFORE releasing DATA high so no tick/ISR can
+     * delay detection of the DHT11's 20-40 us response edge.
      */
     taskENTER_CRITICAL(&s_timing_mux);
+
+    gpio_set_level(s_data_gpio, 1);
+    esp_rom_delay_us(DHT11_RELEASE_US);
 
     /* Sensor response: about 80 us low, followed by about 80 us high. */
     timing_ok = wait_while_level(1, DHT11_EDGE_TIMEOUT_US, NULL) &&
@@ -153,6 +147,11 @@ esp_err_t dht11_read(dht11_reading_t *reading)
         if (timing_ok && high_pulse_us > DHT11_ONE_THRESHOLD_US) {
             bytes[bit / 8] |= (uint8_t)(1U << (7 - (bit % 8)));
         }
+    }
+
+    /* Let the DHT11 finish its ~50 us end-of-frame low pulse cleanly. */
+    if (timing_ok) {
+        wait_while_level(0, DHT11_EDGE_TIMEOUT_US, NULL);
     }
 
     taskEXIT_CRITICAL(&s_timing_mux);

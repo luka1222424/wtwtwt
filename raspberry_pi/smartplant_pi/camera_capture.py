@@ -175,9 +175,11 @@ class CameraCapture:
         camera = module.Picamera2(camera_num=self.camera_index)
         started = False
         try:
-            configuration = camera.create_still_configuration(
-                main={"size": (self.width, self.height)}
-            )
+            config_kwargs = {"main": {"size": (self.width, self.height)}}
+            sensor_modes = getattr(camera, "sensor_modes", None) or []
+            if any(m.get("size") == (2304, 1296) for m in sensor_modes):
+                config_kwargs["sensor"] = {"output_size": (2304, 1296)}
+            configuration = camera.create_still_configuration(**config_kwargs)
             camera.configure(configuration)
             camera.start()
             started = True
