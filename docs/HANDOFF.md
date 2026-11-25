@@ -35,7 +35,7 @@ Alternatively download the repository ZIP. Preserve the directory structure. Cop
 | [project_energy.py](../raspberry_pi/project_energy.py) | Energy projection, not measurement |
 | [CI workflow](../.github/workflows/smartplant-validation.yml) | Both firmware builds and host/model validation |
 
-External model.onnx is not tracked. The prepare script downloads the pinned external model and verifies its SHA-256 from [ASSETS.json](../raspberry_pi/leaf_classifier/ASSETS.json). Preserve model and dataset attribution, licenses, image fixtures and ordered labels. No paid API required.
+The licensed model.onnx is included. The prepare script verifies its SHA-256, with pinned-source download as a recovery option, using [ASSETS.json](../raspberry_pi/leaf_classifier/ASSETS.json). Preserve model and dataset attribution, licenses, image fixtures and ordered labels. No paid API required.
 
 ## 2. Required behaviour
 

@@ -30,8 +30,8 @@ raspberry_pi/images/
 **/secrets.json
 **/*.key
 **/*.pem
-# Downloaded third-party model (see ASSETS.json)
-raspberry_pi/leaf_classifier/model.onnx
+# Incomplete model download
+raspberry_pi/leaf_classifier/model.onnx.download
 
 # Runtime runner lock
 raspberry_pi/.smartplant.lock

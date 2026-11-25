@@ -4,3 +4,4 @@
 *.h text eol=lf
 *.onnx binary
 *.jpg binary
+raspberry_pi/leaf_classifier/labels.json -text
