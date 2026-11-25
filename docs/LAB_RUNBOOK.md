@@ -28,12 +28,25 @@ sudo systemctl disable --now smartplant-optimized.service # only if already inst
 ./prepare_raspberry_pi.sh
 ./check_raspberry_pi.sh
 ```
-Run as ordinary user with sudo privileges, not root. If camera access fails,
-check CSI ribbon, camera permissions and rpicam-hello --list-cameras.
+Run as ordinary user with sudo privileges, not root. If camera access fails
+(for example `dw9807: Device or resource busy` when PipeWire/WirePlumber holds
+libcamera on Raspberry Pi OS Trixie/Bookworm), install the bundled WirePlumber
+configuration and restart the user service:
+```bash
+mkdir -p ~/.config/wireplumber/wireplumber.conf.d
+cp wireplumber/51-disable-libcamera.conf ~/.config/wireplumber/wireplumber.conf.d/
+systemctl --user restart wireplumber
+```
+Check CSI ribbon, camera permissions and `rpicam-hello --list-cameras`.
 The preflight classifies a real captured image but does not assert that an arbitrary
 plant/photo is biologically healthy; known-image classifications are separately checked.
 
 ## Calibrate once, apply to every profile
+The lab-measured soil calibration from the 2026-11-25 hardware validation
+(`DRY_RAW=1246`, `WET_RAW=2390`, `CONFIG_SMART_PLANT_SOIL_CALIBRATED=y`) is
+pre-configured in `esp32/sdkconfig.defaults` and applies to both BASELINE and
+OPTIMIZED profiles. If using a different soil sensor or substrate, re-measure
+and update via `menuconfig`.
 Open the ESP-IDF terminal in esp32/. Replace COM4 with actual port.
 ```powershell
 idf.py -B build-baseline -D "SDKCONFIG=sdkconfig.baseline" -D "SDKCONFIG_DEFAULTS=sdkconfig.defaults;sdkconfig.baseline.defaults" build

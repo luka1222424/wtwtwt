@@ -45,3 +45,6 @@ raspberry_pi/.smartplant-launch.lock
 raspberry_pi/lab-evidence/
 esp32/sdkconfig.bench*
 esp32/build-bench*/
+
+# Regenerated current evaluation figures and CSVs
+/evaluation/current/generated/

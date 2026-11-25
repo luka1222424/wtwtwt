@@ -1,5 +1,9 @@
 # Deployment validation (no new energy measurements)
 
+## Current evidence (25 November 2026)
+
+See [CURRENT_EVALUATION.md](CURRENT_EVALUATION.md). Shared calibration defaults reproduce the tested sensor (1246/2390); recalibrate for other hardware. Production test supports normal/event-triggered wake and poweroff requests, but stable mode and exact physical HALT durations remain unverified. Post-integration 36 tests passed and 4 were skipped locally; check CI separately.
+
 ## Release gate
 
 - Host policy test: compile the exact C header via `python -m unittest discover -s tests -p test_camera_policy.py -v` in raspberry_pi.

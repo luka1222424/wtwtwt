@@ -1,8 +1,6 @@
 # Smart Plant — complete technical handoff
 
-> **Audit update (25 Nov 2026):** the authoritative final calculation is in [MATHEMATICAL_CALCULATIONS.md](MATHEMATICAL_CALCULATIONS.md), with historical-cadence overlap correction and a dynamic projection of 194.55 Wh (26.55% saving). [Independent audit](INDEPENDENT_TECHNICAL_AUDIT.md). Earlier examples below are historical/legacy, not the corrected final model.
-
-**Current report evidence:** [MATHEMATICAL_CALCULATIONS.md](MATHEMATICAL_CALCULATIONS.md) is the primary evaluation; §5 below retains the earlier historical-coefficient example.
+> **Current release:** See [CURRENT_EVALUATION.md](CURRENT_EVALUATION.md) for the new physical evidence and updated projections. Historical extraction and audit are retained separately.
 
 Start here. This public repository contains the complete active implementation. Both firmware modes share one ESP32 source tree and use distinct build configurations. Read only unless explicitly instructed to change something. Do not redesign the project or invent evidence.
 
@@ -99,7 +97,7 @@ Do not run direct launcher alongside service. Manual initial boot is not ESP-tri
 
 ## 4. Functional tests and evidence
 
-Previous software validation of the active implementation: 40 automated tests passed (no skips in model-enabled suite), both ESP-IDF 6.1 builds passed, shell/Python checks and model hash/reference-image classifications passed. The public copy has its own CI workflow; inspect actual run results. No physical validation is claimed.
+Earlier code passed 40 tests and both firmware builds. Post-integration local tests were reported as 36 passed / 4 skipped; inspect current CI before claiming full validation. The 25 November production evidence supports normal/event-driven operation; stable 360-cycle operation is untested physically. See CURRENT_EVALUATION.md.
 
 For accelerated test only: BASELINE CAMERA_INTERVAL_SECONDS=60 TEST_DURATION_SECONDS=180 ./run_baseline.sh; OPTIMIZED separate bench build 6/18 cycles, still 20 s sleep. Allow time for real Pi boot, processing and halt. Restore final 90/360 and 1800 s. Test normal, stable, new alarm, persistent alarm and recovery. Follow runbook for safe maintenance boot and evidence retrieval.
 
@@ -107,16 +105,8 @@ Record ESP USB console with host timestamps (SMARTPLANT_JSON, CAMERA_POLICY, PI_
 
 ## 5. Energy model and report
 
-Read [ENERGY_RESULTS.md](ENERGY_RESULTS.md) and [ADAPTIVE_SCENARIO.md](ADAPTIVE_SCENARIO.md). Historical six-day projections were 273.68 Wh vs 194.60 Wh (28.89%), using different schedules. The new baseline model is 263.4733 Wh over 144 h. Historical low-activity power 1.339330 W is combined system power, not Pi only. Optimized model uses historical coefficients and estimated overlap subtraction:
-```bash
-cd raspberry_pi
-python3 project_energy.py --pi-blocks 71 --sensor-events 25493
-python3 project_energy.py --pi-blocks 288 --sensor-events 25493
-```
-For 71 equivalent activity blocks ~194.6157 Wh / 26.13% saving; 288 blocks ~197.9726 Wh / 24.86%. Conditional projections only. 71 scheduled requests are not verified activity blocks; initial boot, alarms, failed cycles, overhead and new logging can affect results. Raw historical Monsoon traces and physical logs not included. Do not claim new measured energy or six-day reliability.
-
-Report: Springer LNCS, max six pages, single PDF, repository URL, labelled readable figures with trends/outliers discussed, design rationale, implementation, comparison with reasonable alternative and assumed scenario, contribution statement, sources. Deadline 27 November 2026. [Springer guidelines](https://www.springer.com/gp/computer-science/lncs/conference-proceedings-guidelines). Cite external assets with included manifest and licenses. Do not invent individual contributions.
+Read [CURRENT_EVALUATION.md](CURRENT_EVALUATION.md). Current 144 h projection: BASELINE 264.866 Wh, adaptive 194.547 Wh (26.5488%). Run `python evaluation/analyze_current.py` from repository root after installing evaluation requirements. For arbitrary activity counts use `python raspberry_pi/project_energy.py --pi-blocks 109`. Historical power coefficients and new cadence are separate; no fresh electrical measurement is claimed.
 
 ## 6. AI review task
 
-Read only. Use existing validation, avoid repeating expensive tests unless investigating a concrete blocker. Do not refactor, redesign, change hardware or introduce optional optimizations. Return only: specification PASS/FAIL; deployment readiness PASS/FAIL; actual critical blockers with file/line or none; GO/NO-GO for physical testing. Physical operation has not yet been verified.
+Read only. Use existing validation, avoid repeating expensive tests unless investigating a concrete blocker. Do not refactor, redesign, change hardware or introduce optional optimizations. Return only: specification PASS/FAIL; deployment readiness PASS/FAIL; actual critical blockers with file/line or none; GO/NO-GO for physical testing. Physical validation supports normal/event-triggered cycles; see current evidence and remaining limitations.
