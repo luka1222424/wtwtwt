@@ -17,7 +17,7 @@ Waveform segmentation uses 20 ms means, phase-folded sensing activity, local cam
 | Sensor increment J | 0.0505722085 | 0.0924734025 |
 | Camera / Pi block increment J | 2.7016091323 | 56.0464179211 |
 
-The historical Pi activity block includes sensing at its characterization cadence (10.34 s). Subtract its estimated overlap: 34.644 / 10.34 × 0.0924734025 = 0.309830615 J. Net Pi block energy is 55.736587306 J.
+The Pi-like activity block derived from the Monsoon measurements includes sensing at the measured characterization cadence (10.34 s). Subtract its estimated overlap: 34.644 / 10.34 × 0.0924734025 = 0.309830615 J. Net Pi block energy is 55.736587306 J.
 
 Use these characterized power coefficients with the observed timing of the final two profiles (20.000440 s and 20.427157 s). For H = 144 h and T = 518400 s, the baseline has 25920 samples and 288 camera events; the adaptive workload has 25378 samples and 109 assumed complete Pi blocks, including initial boot. Energy in Wh:
 
@@ -25,4 +25,4 @@ Use these characterized power coefficients with the observed timing of the final
 - OPTIMIZED: H × P_O + (N_Os × e_Os + N_Pi × e_Pi,net)/3600 = 194.547182.
 - Relative reduction: 100 × (1 − E_O/E_B) = 26.548841%.
 
-Transfer of the characterized coefficients and completion of nonoverlapping requested activities are model assumptions. The sensitivity range over extraction variants is approximately 25.71–26.84%, not a statistical confidence interval. The final operating scenario, measured functional evidence and limitations are in [CURRENT_EVALUATION.md](CURRENT_EVALUATION.md). The final-profile power was not recorded continuously for 144 hours.
+Transfer of the characterized coefficients and completion of nonoverlapping requested activities are model assumptions. The sensitivity range over extraction variants is approximately 25.71–26.84%, not a statistical confidence interval. The final operating scenario, measured functional evidence and limitations are in [CURRENT_EVALUATION.md](CURRENT_EVALUATION.md). No power trace was recorded for the final HALT-enabled profile; the 144-hour consumption is a projection, not a direct measurement.

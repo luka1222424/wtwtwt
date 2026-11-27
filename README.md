@@ -10,7 +10,7 @@ An energy-aware plant monitoring system with an ESP32-WROOM-32, Raspberry Pi 4B,
 | Camera | Startup and every 30 min | Adaptive 90/360 cycles and new alarms or sensor faults |
 | Raspberry Pi | Continuously active | One capture and inference per boot, then HALT |
 
-Hardware tests recorded 92 baseline and 174 optimized sensor samples. Mean intervals were 20.000 s and 20.427 s. The six-day energy model combines measured final-profile timing with Monsoon-derived coefficients: **264.87 Wh vs 194.55 Wh (26.55% projected saving)**.
+Hardware tests recorded 92 baseline and 174 optimized sensor samples. Mean intervals were 20.000 s and 20.427 s. The six-day energy model combines experimentally measured final-profile timing with energy coefficients derived from physical Monsoon power measurements at shorter operating intervals: **264.87 Wh vs 194.55 Wh (26.55% projected saving)**.
 
 ## Setup
 
@@ -23,4 +23,4 @@ Hardware tests recorded 92 baseline and 174 optimized sensor samples. Mean inter
 
 The ESP32 firmware has separate baseline and optimized build profiles. The exact licensed [ONNX model](raspberry_pi/leaf_classifier/model.onnx) is included. On Raspberry Pi, `prepare_raspberry_pi.sh` installs dependencies and verifies the model checksum, retrieving the pinned source only if necessary. Model and dataset [licenses and attribution](raspberry_pi/leaf_classifier/THIRD_PARTY.md) are included.
 
-Both firmware profiles and the full host/ONNX test suite have passed CI. The 360-cycle policy has been verified in software; hardware experiments exercised normal and event-triggered operation. The 144-hour energy estimate is a model, not a continuous power recording.
+Both firmware profiles and the full host/ONNX test suite have passed CI. The 360-cycle policy has been verified in software; hardware experiments exercised normal and event-triggered operation. No power trace was recorded for the final HALT-enabled profile; applying the measurement-derived coefficients to that profile is a modeling assumption. The 144-hour energy estimate is a projection, not a continuous power recording.

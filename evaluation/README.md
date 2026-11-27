@@ -17,4 +17,4 @@ The original Monsoon extraction script is `analyze_energy.py`; its input CSV man
 python evaluation/analyze_energy.py "baseline(2).zip" "optimzed(4).zip" --out characterized_power
 ```
 
-The latter command reproduces power characterization and its associated historical model outputs; use `analyze_current.py` for the final 144-hour comparison.
+The latter command reproduces power characterization and its associated characterization-stage model outputs; use `analyze_current.py` for the final 144-hour comparison.
